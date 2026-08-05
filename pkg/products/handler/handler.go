@@ -77,3 +77,11 @@ func (h *handler) DeleteProductsById(c fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(fiber.Map{"Message": "Delete Products Sucess"})
 }
+
+func (h *handler) GetProductsItems(c fiber.Ctx) error {
+	res, err := h.service.GetProductsItems()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
+	}
+	return c.Status(200).JSON(fiber.Map{"Message": "GET Success", "Value": res})
+}

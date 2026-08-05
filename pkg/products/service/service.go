@@ -12,6 +12,7 @@ type Service interface {
 	GetAllProducts() (*[]dto.Products, error)
 	UpdateProductsById(id int, req dto.ProductsRequest) error
 	DeleteProductsById(id int) error
+	GetProductsItems() (*dto.ProductResponse, error)
 }
 
 type service struct {
@@ -76,4 +77,37 @@ func (s *service) UpdateProductsById(id int, req dto.ProductsRequest) error {
 
 func (s *service) DeleteProductsById(id int) error {
 	return s.repo.DeleteProductsById(id)
+}
+
+func (s *service) GetProductsItems() (*dto.ProductResponse, error) {
+	p, err := s.repo.GetAllProducts()
+	if err != nil {
+		return nil, err
+	}
+	var product []dto.Products
+	var maxPrice, minPrice int
+	for _, value := range *p {
+		Newp := dto.Products{
+			Id:       value.Id,
+			Name:     value.Name,
+			Price:    value.Price,
+			Descript: value.Descript,
+		}
+		product = append(product, Newp)
+
+		if value.Price > maxPrice {
+			maxPrice = value.Price
+		}
+		if value.Price < minPrice || minPrice == 0 {
+			minPrice = value.Price
+		}
+
+	}
+	products := dto.ProductResponse{
+		TotalItem: len(product),
+		MaxPrice:  maxPrice,
+		MinPrice:  minPrice,
+		Products:  product,
+	}
+	return &products, nil
 }

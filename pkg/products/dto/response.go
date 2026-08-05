@@ -8,8 +8,8 @@ type Products struct {
 }
 
 type ProductResponse struct {
-	Products  []Products
 	TotalItem int
 	MaxPrice  int
 	MinPrice  int
+	Products  []Products
 }

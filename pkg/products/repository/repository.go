@@ -39,7 +39,7 @@ func (r *repository) GetProductByid(id int) (*domain.ProductsModel, error) {
 }
 
 func (r *repository) GetAllProducts() (*[]domain.ProductsModel, error) {
-	query := "SELECT id,name,price,descript FROM products ORDER BY id"
+	query := "SELECT id,name,price,descript FROM products ORDER BY id DESC"
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, err

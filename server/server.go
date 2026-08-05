@@ -20,5 +20,6 @@ func NewServer(db *sql.DB, cfg configs.Configs) *fiber.App {
 	app.Get("/products/:id", productsHandler.GetProductByid)
 	app.Get("/products", productsHandler.GetAllProducts)
 	app.Patch("/products/:id", productsHandler.UpdateProductsById)
+	app.Delete("/products/:id", productsHandler.DeleteProductsById)
 	return app
 }

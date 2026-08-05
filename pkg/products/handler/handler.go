@@ -65,3 +65,15 @@ func (h *handler) UpdateProductsById(c fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(fiber.Map{"Message": "Update Products Success"})
 }
+
+func (h *handler) DeleteProductsById(c fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
+	}
+	err = h.service.DeleteProductsById(id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
+	}
+	return c.Status(200).JSON(fiber.Map{"Message": "Delete Products Sucess"})
+}

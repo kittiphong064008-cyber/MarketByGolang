@@ -11,6 +11,7 @@ type Service interface {
 	GetProductByid(id int) (*dto.Products, error)
 	GetAllProducts() (*[]dto.Products, error)
 	UpdateProductsById(id int, req dto.ProductsRequest) error
+	DeleteProductsById(id int) error
 }
 
 type service struct {
@@ -71,4 +72,8 @@ func (s *service) UpdateProductsById(id int, req dto.ProductsRequest) error {
 		Descript: req.Descript,
 	}
 	return s.repo.UpdateProductsById(id, product)
+}
+
+func (s *service) DeleteProductsById(id int) error {
+	return s.repo.DeleteProductsById(id)
 }

@@ -10,6 +10,7 @@ type Service interface {
 	CreateProducts(dto.ProductsRequest) error
 	GetProductByid(id int) (*dto.Products, error)
 	GetAllProducts() (*[]dto.Products, error)
+	UpdateProductsById(id int, req dto.ProductsRequest) error
 }
 
 type service struct {
@@ -61,4 +62,13 @@ func (s *service) GetAllProducts() (*[]dto.Products, error) {
 		products = append(products, product)
 	}
 	return &products, nil
+}
+
+func (s *service) UpdateProductsById(id int, req dto.ProductsRequest) error {
+	product := domain.ProductsQuery{
+		Name:     req.Name,
+		Price:    req.Price,
+		Descript: req.Descript,
+	}
+	return s.repo.UpdateProductsById(id, product)
 }

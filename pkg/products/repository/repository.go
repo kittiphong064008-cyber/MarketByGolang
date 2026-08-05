@@ -9,6 +9,7 @@ type Repository interface {
 	CreateProducts(domain.ProductsQuery) error
 	GetProductByid(id int) (*domain.ProductsModel, error)
 	GetAllProducts() (*[]domain.ProductsModel, error)
+	UpdateProductsById(id int, req domain.ProductsQuery) error
 }
 
 type repository struct {
@@ -58,4 +59,13 @@ func (r *repository) GetAllProducts() (*[]domain.ProductsModel, error) {
 		return nil, err
 	}
 	return &product, nil
+}
+
+func (r *repository) UpdateProductsById(id int, req domain.ProductsQuery) error {
+	query := "UPDATE products SET name=$1, price=$2, descript=$3 WHERE id=$4"
+	_, err := r.db.Exec(query, req.Name, req.Price, req.Descript, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

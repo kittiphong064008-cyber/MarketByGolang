@@ -21,7 +21,7 @@ func NewHandler(service service.Service) *handler {
 func (h *handler) CreateProducts(c fiber.Ctx) error {
 	var req dto.ProductsRequest
 	if err := c.Bind().Body(&req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"Message": "Invalid Value"})
+		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
 	}
 	err := h.service.CreateProducts(req)
 	if err != nil {
@@ -48,4 +48,20 @@ func (h *handler) GetAllProducts(c fiber.Ctx) error {
 		return c.Status(501).JSON(fiber.Map{"Message": err.Error()})
 	}
 	return c.Status(200).JSON(fiber.Map{"Message": "GET Success", "Value": res})
+}
+
+func (h *handler) UpdateProductsById(c fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
+	}
+	var p dto.ProductsRequest
+	if err := c.Bind().Body(&p); err != nil {
+		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
+	}
+	err = h.service.UpdateProductsById(id, p)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
+	}
+	return c.Status(200).JSON(fiber.Map{"Message": "Update Products Success"})
 }

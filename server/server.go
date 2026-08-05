@@ -18,5 +18,6 @@ func NewServer(db *sql.DB, cfg configs.Configs) *fiber.App {
 
 	app.Post("/products", productsHandler.CreateProducts)
 	app.Get("/products/:id", productsHandler.GetProductByid)
+	app.Get("/products/:id", productsHandler.GetAllProducts)
 	return app
 }

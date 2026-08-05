@@ -45,7 +45,7 @@ func (h *handler) GetProductByid(c fiber.Ctx) error {
 func (h *handler) GetAllProducts(c fiber.Ctx) error {
 	res, err := h.service.GetAllProducts()
 	if err != nil {
-		return nil
-
+		return c.Status(501).JSON(fiber.Map{"Message": err.Error()})
 	}
+	return c.Status(200).JSON(fiber.Map{"Message": "GET Success", "Value": res})
 }

@@ -1,10 +1,10 @@
 package dto
 
 type Products struct {
-	Id       int
-	Name     string
-	Price    int
-	Descript string
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Price    int    `json:"price"`
+	Descript string `json:"descript"`
 }
 
 type ProductResponse struct {

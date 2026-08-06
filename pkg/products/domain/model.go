@@ -1,8 +1,8 @@
 package domain
 
 type ProductsModel struct {
-	Id       int
-	Name     string
-	Price    int
-	Descript string
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Price    int    `json:"price"`
+	Descript string `json:"descript"`
 }

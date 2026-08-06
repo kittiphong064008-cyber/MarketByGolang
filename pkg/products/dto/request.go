@@ -1,7 +1,7 @@
 package dto
 
 type ProductsRequest struct {
-	Name     string
-	Price    int
-	Descript string
+	Name     string `json:"name"`
+	Price    int    `json:"price"`
+	Descript string `json:"descript"`
 }

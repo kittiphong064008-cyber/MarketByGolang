@@ -1,7 +1,7 @@
 package domain
 
 type ProductsQuery struct {
-	Name     string
-	Price    int
-	Descript string
+	Name     string `json:"name"`
+	Price    int    `json:"price"`
+	Descript string `json:"descript"`
 }

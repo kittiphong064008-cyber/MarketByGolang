@@ -1,7 +1,6 @@
 package server
 
 import (
-	configs "cleanarch/config"
 	"cleanarch/pkg/products/handler"
 	"cleanarch/pkg/products/repository"
 	"cleanarch/pkg/products/service"
@@ -10,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func NewServer(db *sql.DB, cfg configs.Configs) *fiber.App {
+func NewServer(db *sql.DB) *fiber.App {
 	app := fiber.New()
 	productsRepo := repository.NewRepository(db)
 	productsService := service.NewService(productsRepo)

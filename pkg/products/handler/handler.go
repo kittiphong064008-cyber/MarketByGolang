@@ -27,7 +27,7 @@ func (h *handler) CreateProducts(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
 	}
-	return c.Status(201).JSON(fiber.Map{"Message": "Creaate Products Success"})
+	return c.Status(201).JSON(fiber.Map{"Message": "Create Products Success"})
 }
 
 func (h *handler) GetProductByid(c fiber.Ctx) error {

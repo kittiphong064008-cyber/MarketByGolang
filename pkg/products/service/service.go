@@ -4,11 +4,13 @@ import (
 	"cleanarch/pkg/products/domain"
 	"cleanarch/pkg/products/dto"
 	"cleanarch/pkg/products/repository"
+	"context"
+	"errors"
 )
 
 type Service interface {
-	CreateProducts(dto.ProductsRequest) error
-	GetProductByid(id int) (*dto.Products, error)
+	CreateProducts(req dto.ProductsRequest) (*dto.Products, error)
+	GetProductByid(ctx context.Context, id int) (*dto.Products, error)
 	GetAllProducts() (*[]dto.Products, error)
 	UpdateProductsById(id int, req dto.ProductsRequest) error
 	DeleteProductsById(id int) error
@@ -25,27 +27,32 @@ func NewService(repo repository.Repository) Service {
 	}
 }
 
-func (s *service) CreateProducts(req dto.ProductsRequest) error {
-	product := domain.ProductsQuery{
+func (s *service) CreateProducts(req dto.ProductsRequest) (*dto.Products, error) {
+	productQuery := domain.ProductsQuery{
 		Name:     req.Name,
 		Price:    req.Price,
 		Descript: req.Descript,
 	}
-	return s.repo.CreateProducts(product)
-}
-
-func (s *service) GetProductByid(id int) (*dto.Products, error) {
-	p, err := s.repo.GetProductByid(id)
+	if req.Price < 0 {
+		return nil, errors.New("price is minus")
+	}
+	if req.Name == "" {
+		return nil, errors.New("Name require")
+	}
+	product, err := s.repo.CreateProducts(productQuery)
 	if err != nil {
 		return nil, err
 	}
-	products := dto.Products{
-		Id:       p.Id,
-		Name:     p.Name,
-		Price:    p.Price,
-		Descript: p.Descript,
+	return product.ToModel(), nil
+}
+
+func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, error) {
+	p, err := s.repo.GetProductByid(ctx, id)
+	if err != nil {
+		return nil, err
 	}
-	return &products, err
+
+	return p.ToModel(), err
 }
 
 func (s *service) GetAllProducts() (*[]dto.Products, error) {
@@ -55,13 +62,7 @@ func (s *service) GetAllProducts() (*[]dto.Products, error) {
 	}
 	var products []dto.Products
 	for _, value := range *p {
-		product := dto.Products{
-			Id:       value.Id,
-			Name:     value.Name,
-			Price:    value.Price,
-			Descript: value.Descript,
-		}
-		products = append(products, product)
+		products = append(products, *value.ToModel())
 	}
 	return &products, nil
 }
@@ -87,13 +88,7 @@ func (s *service) GetProductsItems() (*dto.ProductResponse, error) {
 	var product []dto.Products
 	var maxPrice, minPrice int
 	for _, value := range *p {
-		Newp := dto.Products{
-			Id:       value.Id,
-			Name:     value.Name,
-			Price:    value.Price,
-			Descript: value.Descript,
-		}
-		product = append(product, Newp)
+		product = append(product, *value.ToModel())
 
 		if value.Price > maxPrice {
 			maxPrice = value.Price

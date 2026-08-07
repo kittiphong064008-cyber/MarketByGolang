@@ -1,8 +1,19 @@
 package domain
 
+import "cleanarch/pkg/products/dto"
+
 type ProductsModel struct {
-	Id       int    `json:"id"`
-	Name     string `json:"name"`
-	Price    int    `json:"price"`
-	Descript string `json:"descript"`
+	Id       int
+	Name     string
+	Price    int
+	Descript string
+}
+
+func (p *ProductsModel) ToModel() *dto.Products {
+	return &dto.Products{
+		Id:       p.Id,
+		Name:     p.Name,
+		Price:    p.Price,
+		Descript: p.Descript,
+	}
 }

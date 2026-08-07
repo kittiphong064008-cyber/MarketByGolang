@@ -23,7 +23,7 @@ func (h *handler) CreateProducts(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
 	}
-	err := h.service.CreateProducts(req)
+	_, err := h.service.CreateProducts(req)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
 	}
@@ -35,7 +35,7 @@ func (h *handler) GetProductByid(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
 	}
-	res, err := h.service.GetProductByid(id)
+	res, err := h.service.GetProductByid(c.Context(), id)
 	if err != nil {
 		return c.Status(501).JSON(fiber.Map{"Message": err.Error()})
 	}

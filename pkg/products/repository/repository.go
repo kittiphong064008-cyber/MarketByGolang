@@ -12,8 +12,8 @@ type Repository interface {
 	CreateProducts(domain.ProductsQuery) (domain.ProductsModel, error)
 	GetProductByid(ctx context.Context, id int) (*domain.ProductsModel, error)
 	GetAllProducts() (*[]domain.ProductsModel, error)
-	UpdateProductsById(id int, req domain.ProductsQuery) error
-	DeleteProductsById(id int) error
+	UpdateProductsById(ctx context.Context, id int, req domain.ProductsQuery) (int, error)
+	DeleteProductsById(ctx context.Context, id int) (int, error)
 }
 
 type repository struct {
@@ -33,7 +33,6 @@ func (r *repository) CreateProducts(p domain.ProductsQuery) (domain.ProductsMode
 	if err != nil {
 		return domain.ProductsModel{}, err
 	}
-
 	return domain.ProductsModel{
 		Id:       int(id),
 		Name:     p.Name,
@@ -53,7 +52,6 @@ func (r *repository) GetProductByid(ctx context.Context, id int) (*domain.Produc
 		}
 		return nil, err
 	}
-
 	return &p, nil
 }
 
@@ -79,31 +77,34 @@ func (r *repository) GetAllProducts() (*[]domain.ProductsModel, error) {
 	return &product, nil
 }
 
-func (r *repository) UpdateProductsById(id int, req domain.ProductsQuery) error {
-	query := "UPDATE products SET name=$1, price=$2, descript=$3"
-	result, err := r.db.Exec(query, req.Name, req.Price, req.Descript, id)
+func (r *repository) UpdateProductsById(ctx context.Context, id int, req domain.ProductsQuery) (int, error) {
+	query := "UPDATE products SET name=$1, price=$2, descript=$3 WHERE id = $4 "
+	result, err := r.db.ExecContext(ctx, query, req.Name, req.Price, req.Descript, id)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("No product found")
+		return 0, fmt.Errorf("No product found id = %d", id)
 	}
-	return nil
+	return int(rowsAffected), nil
 }
 
-func (r *repository) DeleteProductsById(id int) error {
+func (r *repository) DeleteProductsById(ctx context.Context, id int) (int, error) {
 	query := "DELETE FROM products WHERE id=$1"
-	result, err := r.db.Exec(query, id)
+	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	rowsAffected, err := result.RowsAffected()
-	if rowsAffected == 0 {
-		return errors.New("No product found")
+	if err != nil {
+		return 0, err
 	}
-	return nil
+	if rowsAffected == 0 {
+		return int(rowsAffected), fmt.Errorf("No product found id = %d", id)
+	}
+	return int(rowsAffected), nil
 }

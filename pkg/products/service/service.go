@@ -12,8 +12,8 @@ type Service interface {
 	CreateProducts(req dto.ProductsRequest) (*dto.Products, error)
 	GetProductByid(ctx context.Context, id int) (*dto.Products, error)
 	GetAllProducts() (*[]dto.Products, error)
-	UpdateProductsById(id int, req dto.ProductsRequest) error
-	DeleteProductsById(id int) error
+	UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error)
+	DeleteProductsById(ctx context.Context, id int) (int, error)
 	GetProductsItems() (*dto.ProductResponse, error)
 }
 
@@ -51,7 +51,6 @@ func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, er
 	if err != nil {
 		return nil, err
 	}
-
 	return p.ToModel(), err
 }
 
@@ -67,17 +66,17 @@ func (s *service) GetAllProducts() (*[]dto.Products, error) {
 	return &products, nil
 }
 
-func (s *service) UpdateProductsById(id int, req dto.ProductsRequest) error {
+func (s *service) UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error) {
 	product := domain.ProductsQuery{
 		Name:     req.Name,
 		Price:    req.Price,
 		Descript: req.Descript,
 	}
-	return s.repo.UpdateProductsById(id, product)
+	return s.repo.UpdateProductsById(ctx, id, product)
 }
 
-func (s *service) DeleteProductsById(id int) error {
-	return s.repo.DeleteProductsById(id)
+func (s *service) DeleteProductsById(ctx context.Context, id int) (int, error) {
+	return s.repo.DeleteProductsById(ctx, id)
 }
 
 func (s *service) GetProductsItems() (*dto.ProductResponse, error) {

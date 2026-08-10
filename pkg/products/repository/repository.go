@@ -34,7 +34,7 @@ func (r *repository) CreateProducts(ctx context.Context, p domain.ProductsQuery)
 		return domain.ProductsModel{}, fmt.Errorf("Failed to Create Product ")
 	}
 	return domain.ProductsModel{
-		Id:       int(id),
+		Id:       id,
 		Name:     p.Name,
 		Price:    p.Price,
 		Descript: p.Descript,
@@ -101,7 +101,7 @@ func (r *repository) DeleteProductsById(ctx context.Context, id int) (int, error
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return 0, fmt.Errorf("Failed to Fet Rows Affected for Product Id = %d", id)
+		return 0, fmt.Errorf("Failed to Get Rows Affected for Product Id = %d", id)
 	}
 	if rowsAffected == 0 {
 		return int(rowsAffected), fmt.Errorf("No Product Found Id = %d", id)

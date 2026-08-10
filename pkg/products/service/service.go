@@ -69,6 +69,10 @@ func (s *service) GetAllProducts(ctx context.Context) (*[]dto.Products, error) {
 }
 
 func (s *service) UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error) {
+	err := val.Struct(req)
+	if err != nil {
+		return 0, fmt.Errorf("Invalid Format Json")
+	}
 	product := domain.ProductsQuery{
 		Name:     req.Name,
 		Price:    req.Price,

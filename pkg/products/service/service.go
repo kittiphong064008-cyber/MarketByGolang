@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	CreateProducts(req dto.ProductsRequest) (*dto.Products, error)
+	CreateProducts(ctx context.Context, req dto.ProductsRequest) (*dto.Products, error)
 	GetProductByid(ctx context.Context, id int) (*dto.Products, error)
 	GetAllProducts() (*[]dto.Products, error)
 	UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error)
@@ -27,7 +27,7 @@ func NewService(repo repository.Repository) Service {
 	}
 }
 
-func (s *service) CreateProducts(req dto.ProductsRequest) (*dto.Products, error) {
+func (s *service) CreateProducts(ctx context.Context, req dto.ProductsRequest) (*dto.Products, error) {
 	productQuery := domain.ProductsQuery{
 		Name:     req.Name,
 		Price:    req.Price,
@@ -39,7 +39,7 @@ func (s *service) CreateProducts(req dto.ProductsRequest) (*dto.Products, error)
 	if req.Name == "" {
 		return nil, errors.New("Name require")
 	}
-	product, err := s.repo.CreateProducts(productQuery)
+	product, err := s.repo.CreateProducts(ctx, productQuery)
 	if err != nil {
 		return nil, err
 	}

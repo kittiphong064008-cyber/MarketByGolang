@@ -23,7 +23,7 @@ func (h *handler) CreateProducts(c fiber.Ctx) error {
 	if err := c.Bind().Body(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"Message": err.Error()})
 	}
-	_, err := h.service.CreateProducts(req)
+	_, err := h.service.CreateProducts(c.Context(), req)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
 	}

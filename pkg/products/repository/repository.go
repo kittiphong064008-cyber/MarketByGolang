@@ -9,7 +9,7 @@ import (
 )
 
 type Repository interface {
-	CreateProducts(domain.ProductsQuery) (domain.ProductsModel, error)
+	CreateProducts(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error)
 	GetProductByid(ctx context.Context, id int) (*domain.ProductsModel, error)
 	GetAllProducts() (*[]domain.ProductsModel, error)
 	UpdateProductsById(ctx context.Context, id int, req domain.ProductsQuery) (int, error)
@@ -26,9 +26,9 @@ func NewRepository(db *sql.DB) Repository { //invert Dependency
 	}
 }
 
-func (r *repository) CreateProducts(p domain.ProductsQuery) (domain.ProductsModel, error) {
+func (r *repository) CreateProducts(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error) {
 	query := "INSERT INTO products(name, price ,descript) VALUES ($1,$2,$3)"
-	result, err := r.db.Exec(query, p.Name, p.Price, p.Descript)
+	result, err := r.db.ExecContext(ctx, query, p.Name, p.Price, p.Descript)
 	id, err := result.LastInsertId()
 	if err != nil {
 		return domain.ProductsModel{}, err

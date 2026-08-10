@@ -67,12 +67,12 @@ func (r *repository) GetAllProducts(ctx context.Context) (*[]domain.ProductsMode
 		var p domain.ProductsModel
 		err := rows.Scan(&p.Id, &p.Name, &p.Price, &p.Descript)
 		if err != nil {
-			return nil, fmt.Errorf("error to scan product rows")
+			return nil, fmt.Errorf("Error to Scan Product Rows")
 		}
 		product = append(product, p)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating product rows")
+		return nil, fmt.Errorf("Error Iterating Product Rows")
 	}
 	return &product, nil
 }
@@ -81,14 +81,14 @@ func (r *repository) UpdateProductsById(ctx context.Context, id int, req domain.
 	query := "UPDATE products SET name=$1, price=$2, descript=$3 WHERE id = $4 "
 	result, err := r.db.ExecContext(ctx, query, req.Name, req.Price, req.Descript, id)
 	if err != nil {
-		return 0, fmt.Errorf("Failed to update product id = %d", id)
+		return 0, fmt.Errorf("Failed to Update Product Id = %d", id)
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return 0, fmt.Errorf("Failed to get rows affected for product id = %d", id)
+		return 0, fmt.Errorf("Failed to Get Rows Affected for Product Id = %d", id)
 	}
 	if rowsAffected == 0 {
-		return 0, fmt.Errorf("No product found id = %d", id)
+		return 0, fmt.Errorf("No Product Found Id = %d", id)
 	}
 	return int(rowsAffected), nil
 }
@@ -97,14 +97,14 @@ func (r *repository) DeleteProductsById(ctx context.Context, id int) (int, error
 	query := "DELETE FROM products WHERE id=$1"
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
-		return 0, fmt.Errorf("Failed to delete product id = %d", id)
+		return 0, fmt.Errorf("Failed to Delete Product Id = %d", id)
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return 0, fmt.Errorf("Failed to get rows affected for product id = %d", id)
+		return 0, fmt.Errorf("Failed to Fet Rows Affected for Product Id = %d", id)
 	}
 	if rowsAffected == 0 {
-		return int(rowsAffected), fmt.Errorf("No product found id = %d", id)
+		return int(rowsAffected), fmt.Errorf("No Product Found Id = %d", id)
 	}
 	return int(rowsAffected), nil
 }

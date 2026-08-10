@@ -53,7 +53,7 @@ func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, er
 	if err != nil {
 		return nil, err
 	}
-	return p.ToModel(), err
+	return p.ToModel(), nil
 }
 
 func (s *service) GetAllProducts(ctx context.Context) (*[]dto.Products, error) {

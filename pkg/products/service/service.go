@@ -5,7 +5,9 @@ import (
 	"cleanarch/pkg/products/dto"
 	"cleanarch/pkg/products/repository"
 	"context"
-	"errors"
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type Service interface {
@@ -27,17 +29,17 @@ func NewService(repo repository.Repository) Service {
 	}
 }
 
+var val = validator.New()
+
 func (s *service) CreateProducts(ctx context.Context, req dto.ProductsRequest) (*dto.Products, error) {
+	err := val.Struct(req)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid Format Json")
+	}
 	productQuery := domain.ProductsQuery{
 		Name:     req.Name,
 		Price:    req.Price,
 		Descript: req.Descript,
-	}
-	if req.Price < 0 {
-		return nil, errors.New("price is minus")
-	}
-	if req.Name == "" {
-		return nil, errors.New("Name require")
 	}
 	product, err := s.repo.CreateProducts(ctx, productQuery)
 	if err != nil {

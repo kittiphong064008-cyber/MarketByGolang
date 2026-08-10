@@ -27,11 +27,11 @@ func NewRepository(db *sql.DB) Repository { //invert Dependency
 }
 
 func (r *repository) CreateProducts(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error) {
-	query := "INSERT INTO products(name, price ,descript) VALUES ($1,$2,$3)"
-	result, err := r.db.ExecContext(ctx, query, p.Name, p.Price, p.Descript)
-	id, err := result.LastInsertId()
+	query := "INSERT INTO products(name, price ,descript) VALUES ($1,$2,$3) RETURNING id"
+	var id int
+	err := r.db.QueryRowContext(ctx, query, p.Name, p.Price, p.Descript).Scan(&id)
 	if err != nil {
-		return domain.ProductsModel{}, err
+		return domain.ProductsModel{}, fmt.Errorf("Error to Create Product ")
 	}
 	return domain.ProductsModel{
 		Id:       int(id),

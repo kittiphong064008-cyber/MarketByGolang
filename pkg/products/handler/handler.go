@@ -43,7 +43,7 @@ func (h *handler) GetProductByid(c fiber.Ctx) error {
 }
 
 func (h *handler) GetAllProducts(c fiber.Ctx) error {
-	res, err := h.service.GetAllProducts()
+	res, err := h.service.GetAllProducts(c.Context())
 	if err != nil {
 		return c.Status(501).JSON(fiber.Map{"Message": err.Error()})
 	}
@@ -79,7 +79,7 @@ func (h *handler) DeleteProductsById(c fiber.Ctx) error {
 }
 
 func (h *handler) GetProductsItems(c fiber.Ctx) error {
-	res, err := h.service.GetProductsItems()
+	res, err := h.service.GetProductsItems(c.Context())
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"Message": err.Error()})
 	}

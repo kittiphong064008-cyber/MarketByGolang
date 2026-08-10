@@ -11,7 +11,7 @@ import (
 type Repository interface {
 	CreateProducts(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error)
 	GetProductByid(ctx context.Context, id int) (*domain.ProductsModel, error)
-	GetAllProducts() (*[]domain.ProductsModel, error)
+	GetAllProducts(ctx context.Context) (*[]domain.ProductsModel, error)
 	UpdateProductsById(ctx context.Context, id int, req domain.ProductsQuery) (int, error)
 	DeleteProductsById(ctx context.Context, id int) (int, error)
 }
@@ -55,9 +55,9 @@ func (r *repository) GetProductByid(ctx context.Context, id int) (*domain.Produc
 	return &p, nil
 }
 
-func (r *repository) GetAllProducts() (*[]domain.ProductsModel, error) {
+func (r *repository) GetAllProducts(ctx context.Context) (*[]domain.ProductsModel, error) {
 	query := "SELECT id,name,price,descript FROM products ORDER BY id DESC"
-	rows, err := r.db.Query(query)
+	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

@@ -11,10 +11,10 @@ import (
 type Service interface {
 	CreateProducts(ctx context.Context, req dto.ProductsRequest) (*dto.Products, error)
 	GetProductByid(ctx context.Context, id int) (*dto.Products, error)
-	GetAllProducts() (*[]dto.Products, error)
+	GetAllProducts(ctx context.Context) (*[]dto.Products, error)
 	UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error)
 	DeleteProductsById(ctx context.Context, id int) (int, error)
-	GetProductsItems() (*dto.ProductResponse, error)
+	GetProductsItems(ctx context.Context) (*dto.ProductResponse, error)
 }
 
 type service struct {
@@ -54,8 +54,8 @@ func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, er
 	return p.ToModel(), err
 }
 
-func (s *service) GetAllProducts() (*[]dto.Products, error) {
-	p, err := s.repo.GetAllProducts()
+func (s *service) GetAllProducts(ctx context.Context) (*[]dto.Products, error) {
+	p, err := s.repo.GetAllProducts(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +79,8 @@ func (s *service) DeleteProductsById(ctx context.Context, id int) (int, error) {
 	return s.repo.DeleteProductsById(ctx, id)
 }
 
-func (s *service) GetProductsItems() (*dto.ProductResponse, error) {
-	p, err := s.repo.GetAllProducts()
+func (s *service) GetProductsItems(ctx context.Context) (*dto.ProductResponse, error) {
+	p, err := s.repo.GetAllProducts(ctx)
 	if err != nil {
 		return nil, err
 	}

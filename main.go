@@ -21,6 +21,6 @@ func main() {
 	}
 	test()
 	defer db.Close()
-	app := server.NewServer(db)
-	log.Fatal(app.Listen(cfg.App.Host + ":" + cfg.App.Port))
+	app := server.NewServer(&cfg, db)
+	app.Start()
 }

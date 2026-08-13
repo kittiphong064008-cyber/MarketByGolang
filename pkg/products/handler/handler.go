@@ -55,7 +55,7 @@ func (h *handler) UpdateProductsById(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(404).JSON(dto.ResponseError{Message: err.Error()})
 	}
-	var p dto.ProductsRequest
+	var p dto.ProductsUpdateRequest
 	if err := c.Bind().Body(&p); err != nil {
 		return c.Status(400).JSON(dto.ResponseError{Message: err.Error()})
 	}
@@ -75,7 +75,7 @@ func (h *handler) DeleteProductsById(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(404).JSON(dto.ResponseError{Message: err.Error()})
 	}
-	return c.Status(204).JSON(dto.ResponseRows{Message: "Delete Success", RowsAffect: rowsAffected})
+	return c.Status(200).JSON(dto.ResponseRows{Message: "Delete Success", RowsAffect: rowsAffected})
 }
 
 func (h *handler) GetProductsItems(c fiber.Ctx) error {

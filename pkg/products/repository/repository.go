@@ -9,11 +9,11 @@ import (
 )
 
 type Repository interface {
-	CreateProducts(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error)
-	GetProductByid(ctx context.Context, id int) (*domain.ProductsModel, error)
-	GetAllProducts(ctx context.Context) (*[]domain.ProductsModel, error)
-	UpdateProductsById(ctx context.Context, id int, req domain.ProductsQuery) (int, error)
-	DeleteProductsById(ctx context.Context, id int) (int, error)
+	Create(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error)
+	FindByID(ctx context.Context, id int) (*domain.ProductsModel, error)
+	List(ctx context.Context) (*[]domain.ProductsModel, error)
+	Update(ctx context.Context, id int, req domain.ProductsQuery) (int, error)
+	Delete(ctx context.Context, id int) (int, error)
 }
 
 type repository struct {
@@ -26,8 +26,8 @@ func NewRepository(db *sql.DB) Repository { //invert Dependency
 	}
 }
 
-func (r *repository) CreateProducts(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error) {
-	query := "INSERT INTO products(name, price ,descript) VALUES ($1,$2,$3) RETURNING id"
+func (r *repository) Create(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error) {
+	query := "INSERT INTO products(name, price ,descript) VALUES ($1,$2,$3) RETURNING id" //ถูกแล้ว
 	var id int
 	err := r.db.QueryRowContext(ctx, query, p.Name, p.Price, p.Descript).Scan(&id)
 	if err != nil {
@@ -41,7 +41,7 @@ func (r *repository) CreateProducts(ctx context.Context, p domain.ProductsQuery)
 	}, err
 }
 
-func (r *repository) GetProductByid(ctx context.Context, id int) (*domain.ProductsModel, error) {
+func (r *repository) FindByID(ctx context.Context, id int) (*domain.ProductsModel, error) {
 	query := "SELECT id,name,price,descript FROM products WHERE id=$1"
 	value := r.db.QueryRowContext(ctx, query, id)
 	var p domain.ProductsModel
@@ -55,7 +55,7 @@ func (r *repository) GetProductByid(ctx context.Context, id int) (*domain.Produc
 	return &p, nil
 }
 
-func (r *repository) GetAllProducts(ctx context.Context) (*[]domain.ProductsModel, error) {
+func (r *repository) List(ctx context.Context) (*[]domain.ProductsModel, error) {
 	query := "SELECT id,name,price,descript FROM products ORDER BY id DESC"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
@@ -77,7 +77,7 @@ func (r *repository) GetAllProducts(ctx context.Context) (*[]domain.ProductsMode
 	return &product, nil
 }
 
-func (r *repository) UpdateProductsById(ctx context.Context, id int, req domain.ProductsQuery) (int, error) {
+func (r *repository) Update(ctx context.Context, id int, req domain.ProductsQuery) (int, error) {
 	query := "UPDATE products SET name=$1, price=$2, descript=$3 WHERE id = $4 "
 	result, err := r.db.ExecContext(ctx, query, req.Name, req.Price, req.Descript, id)
 	if err != nil {
@@ -93,7 +93,7 @@ func (r *repository) UpdateProductsById(ctx context.Context, id int, req domain.
 	return int(rowsAffected), nil
 }
 
-func (r *repository) DeleteProductsById(ctx context.Context, id int) (int, error) {
+func (r *repository) Delete(ctx context.Context, id int) (int, error) {
 	query := "DELETE FROM products WHERE id=$1"
 	result, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {

@@ -7,14 +7,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10" //ย้ายไป handler
 )
 
 type Service interface {
 	CreateProducts(ctx context.Context, req dto.ProductsRequest) (*dto.Products, error)
 	GetProductByid(ctx context.Context, id int) (*dto.Products, error)
 	GetAllProducts(ctx context.Context) (*[]dto.Products, error)
-	UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error)
+	UpdateProductsById(ctx context.Context, id int, req dto.ProductsUpdateRequest) (int, error)
 	DeleteProductsById(ctx context.Context, id int) (int, error)
 	GetProductsItems(ctx context.Context) (*dto.ProductResponse, error)
 }
@@ -41,7 +41,7 @@ func (s *service) CreateProducts(ctx context.Context, req dto.ProductsRequest) (
 		Price:    req.Price,
 		Descript: req.Descript,
 	}
-	product, err := s.repo.CreateProducts(ctx, productQuery)
+	product, err := s.repo.Create(ctx, productQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (s *service) CreateProducts(ctx context.Context, req dto.ProductsRequest) (
 }
 
 func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, error) {
-	p, err := s.repo.GetProductByid(ctx, id)
+	p, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, er
 }
 
 func (s *service) GetAllProducts(ctx context.Context) (*[]dto.Products, error) {
-	p, err := s.repo.GetAllProducts(ctx)
+	p, err := s.repo.List(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -68,25 +68,38 @@ func (s *service) GetAllProducts(ctx context.Context) (*[]dto.Products, error) {
 	return &products, nil
 }
 
-func (s *service) UpdateProductsById(ctx context.Context, id int, req dto.ProductsRequest) (int, error) {
-	err := val.Struct(req)
+func (s *service) UpdateProductsById(ctx context.Context, id int, req dto.ProductsUpdateRequest) (int, error) {
+	existingProduct, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return 0, err
+	}
+	if req.Name != nil {
+		existingProduct.Name = *req.Name
+	}
+	if req.Price != nil {
+		existingProduct.Price = *req.Price
+	}
+	if req.Descript != nil {
+		existingProduct.Descript = *req.Descript
+	}
+	err = val.Struct(req)
 	if err != nil {
 		return 0, fmt.Errorf("Invalid Format Json")
 	}
 	product := domain.ProductsQuery{
-		Name:     req.Name,
-		Price:    req.Price,
-		Descript: req.Descript,
+		Name:     existingProduct.Name,
+		Price:    existingProduct.Price,
+		Descript: existingProduct.Descript,
 	}
-	return s.repo.UpdateProductsById(ctx, id, product)
+	return s.repo.Update(ctx, id, product)
 }
 
 func (s *service) DeleteProductsById(ctx context.Context, id int) (int, error) {
-	return s.repo.DeleteProductsById(ctx, id)
+	return s.repo.Delete(ctx, id)
 }
 
 func (s *service) GetProductsItems(ctx context.Context) (*dto.ProductResponse, error) {
-	p, err := s.repo.GetAllProducts(ctx)
+	p, err := s.repo.List(ctx)
 	if err != nil {
 		return nil, err
 	}

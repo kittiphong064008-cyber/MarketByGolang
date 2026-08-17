@@ -34,7 +34,6 @@ func Load() Configs {
 	v.AddConfigPath("./config")
 
 	setDefaults(v)
-	bindEnvVars(v)
 
 	if err := v.ReadInConfig(); err != nil {
 		var notFound viper.ConfigFileNotFoundError
@@ -58,18 +57,4 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("postgres.DB_HOST", "localhost")
 	v.SetDefault("postgres.DB_PORT", "5432")
 	v.SetDefault("postgres.DB_SSLMODE", "disable")
-}
-
-func bindEnvVars(v *viper.Viper) {
-	v.AutomaticEnv()
-
-	_ = v.BindEnv("app.FIBER_HOST", "FIBER_HOST")
-	_ = v.BindEnv("app.FIBER_PORT", "FIBER_PORT")
-
-	_ = v.BindEnv("postgres.DB_HOST", "DB_HOST")
-	_ = v.BindEnv("postgres.DB_PORT", "DB_PORT")
-	_ = v.BindEnv("postgres.DB_USERNAME", "DB_USERNAME")
-	_ = v.BindEnv("postgres.DB_PASSWORD", "DB_PASSWORD")
-	_ = v.BindEnv("postgres.DB_DATABASE", "DB_DATABASE")
-	_ = v.BindEnv("postgres.DB_SSLMODE", "DB_SSLMODE")
 }

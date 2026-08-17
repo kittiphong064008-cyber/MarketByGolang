@@ -23,16 +23,14 @@ var (
 )
 
 func NewServer(config *configs.Configs, db *sql.DB) *Server {
-	app := fiber.New()
 	once.Do(func() { //ทำเพื่อทำครั้งเดียวแล้วใช้ได้เลย
+		app := fiber.New()
 		server = &Server{
 			app:    app,
 			config: config,
 			db:     db,
 		}
-		fmt.Println("LUK PEE PALM")
 	})
-	fmt.Println("LUK PEE PALM2")
 	return server
 }
 

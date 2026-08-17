@@ -2,6 +2,7 @@ package server
 
 import (
 	configs "cleanarch/config"
+	"cleanarch/server/router"
 	"database/sql"
 	"fmt"
 	"log"
@@ -37,9 +38,8 @@ func NewServer(config *configs.Configs, db *sql.DB) *Server {
 
 func (s *Server) Start() {
 	api := s.app.Group("/api/v1")
-	api.Get("/health", func(c fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON("P PALM HANSOME MAK MAK")
-	})
+	router.Product(api, s.db)
+
 	log.Printf("Sever start at port = %s", s.config.App.Port)
 	if err := s.app.Listen(fmt.Sprintf(":%v", s.config.App.Port)); err != nil {
 		log.Fatal("Fail to start Server ", err)

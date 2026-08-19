@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	CreateCatagory(ctx context.Context, req dto.CatagoryRequest) (*dto.CatagoryResponse, error)
+	GetCatagoryById(ctx context.Context, id int) (*dto.CatagoryResponse, error)
 }
 
 type service struct {
@@ -26,6 +27,14 @@ func (s *service) CreateCatagory(ctx context.Context, req dto.CatagoryRequest) (
 		Name: req.Name,
 	}
 	catagory, err := s.repo.Create(ctx, catagoryRequest)
+	if err != nil {
+		return nil, err
+	}
+	return catagory.ToModel(), nil
+}
+
+func (s *service) GetCatagoryById(ctx context.Context, id int) (*dto.CatagoryResponse, error) {
+	catagory, err := s.repo.FindById(ctx, id)
 	if err != nil {
 		return nil, err
 	}

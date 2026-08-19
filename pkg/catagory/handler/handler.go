@@ -3,6 +3,7 @@ package handler
 import (
 	"cleanarch/pkg/catagory/dto"
 	"cleanarch/pkg/catagory/service"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
@@ -33,4 +34,16 @@ func (h *handler) CreateCatagory(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
 	}
 	return c.Status(fiber.StatusCreated).JSON(dto.ResponseOne{Message: "Create Success", Value: *res})
+}
+
+func (h *handler) GetCatagoryById(c fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: "Invalid ID"})
+	}
+	res, err := h.service.GetCatagoryById(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.ResponseOne{Message: "Get Success", Value: *res})
 }

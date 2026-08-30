@@ -11,7 +11,7 @@ import (
 type Service interface {
 	CreateProducts(ctx context.Context, req dto.ProductsRequest) (*dto.Products, error)
 	GetProductByid(ctx context.Context, id int) (*dto.Products, error)
-	GetAllProducts(ctx context.Context) (*[]dto.Products, error)
+	GetAllProducts(ctx context.Context, page int, limit int) (*[]dto.Products, *dto.Pagination, error)
 	UpdateProductsById(ctx context.Context, id int, req dto.ProductsUpdateRequest) (int, error)
 	DeleteProductsById(ctx context.Context, id int) (int, error)
 	GetProductsItems(ctx context.Context) (*dto.ProductResponse, error)
@@ -48,16 +48,17 @@ func (s *service) GetProductByid(ctx context.Context, id int) (*dto.Products, er
 	return p.ToModel(), nil
 }
 
-func (s *service) GetAllProducts(ctx context.Context) (*[]dto.Products, error) {
-	p, err := s.repo.List(ctx)
+func (s *service) GetAllProducts(ctx context.Context, page int, limit int) (*[]dto.Products, *dto.Pagination, error) {
+	p, total, err := s.repo.ListPaginated(ctx, page, limit)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var products []dto.Products
 	for _, value := range *p {
 		products = append(products, *value.ToModel())
 	}
-	return &products, nil
+	pagination := dto.BuildPagination(page, limit, total)
+	return &products, pagination, nil
 }
 
 func (s *service) UpdateProductsById(ctx context.Context, id int, req dto.ProductsUpdateRequest) (int, error) {

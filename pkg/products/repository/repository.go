@@ -12,6 +12,7 @@ type Repository interface {
 	Create(ctx context.Context, p domain.ProductsQuery) (domain.ProductsModel, error)
 	FindByID(ctx context.Context, id int) (*domain.ProductsModel, error)
 	List(ctx context.Context) (*[]domain.ProductsModel, error)
+	ListPaginated(ctx context.Context, page int, limit int) (*[]domain.ProductsModel, int, error)
 	Update(ctx context.Context, id int, req domain.ProductsQuery) (int, error)
 	Delete(ctx context.Context, id int) (int, error)
 }
@@ -75,6 +76,43 @@ func (r *repository) List(ctx context.Context) (*[]domain.ProductsModel, error) 
 		return nil, fmt.Errorf("Error Iterating Product Rows")
 	}
 	return &product, nil
+}
+
+func (r *repository) ListPaginated(ctx context.Context, page int, limit int) (*[]domain.ProductsModel, int, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 10
+	}
+
+	var total int
+	countQuery := "SELECT COUNT(*) FROM products"
+	if err := r.db.QueryRowContext(ctx, countQuery).Scan(&total); err != nil {
+		return nil, 0, fmt.Errorf("Failed to count products")
+	}
+
+	offset := (page - 1) * limit
+	query := "SELECT id,name,price,descript FROM products ORDER BY id DESC LIMIT $1 OFFSET $2"
+	rows, err := r.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("Failed to Get All Product ")
+	}
+	defer rows.Close()
+
+	var product []domain.ProductsModel
+	for rows.Next() {
+		var p domain.ProductsModel
+		err := rows.Scan(&p.Id, &p.Name, &p.Price, &p.Descript)
+		if err != nil {
+			return nil, 0, fmt.Errorf("Error to Scan Product Rows")
+		}
+		product = append(product, p)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("Error Iterating Product Rows")
+	}
+	return &product, total, nil
 }
 
 func (r *repository) Update(ctx context.Context, id int, req domain.ProductsQuery) (int, error) {

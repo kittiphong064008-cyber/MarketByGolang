@@ -49,11 +49,20 @@ func (h *handler) GetProductByid(c fiber.Ctx) error {
 }
 
 func (h *handler) GetAllProducts(c fiber.Ctx) error {
-	res, err := h.service.GetAllProducts(c.Context())
+	page, err := strconv.Atoi(c.Query("page", "1"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+	limit, err := strconv.Atoi(c.Query("limit", "10"))
+	if err != nil || limit <= 0 {
+		limit = 10
+	}
+
+	res, pagination, err := h.service.GetAllProducts(c.Context(), page, limit)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
 	}
-	return c.Status(fiber.StatusOK).JSON(dto.ResponseAll{Message: "GET Success", Value: *res})
+	return c.Status(fiber.StatusOK).JSON(dto.ResponseAll{Message: "GET Success", Value: *res, Pagination: *pagination})
 }
 
 func (h *handler) UpdateProductsById(c fiber.Ctx) error {

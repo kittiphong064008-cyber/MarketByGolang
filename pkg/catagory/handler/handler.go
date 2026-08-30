@@ -43,7 +43,52 @@ func (h *handler) GetCatagoryById(c fiber.Ctx) error {
 	}
 	res, err := h.service.GetCatagoryById(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
+		return c.Status(fiber.StatusNotFound).JSON(dto.ResponseError{Message: err.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(dto.ResponseOne{Message: "Get Success", Value: *res})
+}
+
+func (h *handler) GetAllCatagory(c fiber.Ctx) error {
+	res, err := h.service.GetAllCatagory(c.Context())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.ResponseAll{Message: "Get Success", Value: *res})
+}
+
+func (h *handler) UpdateCatagoryById(c fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	var req dto.CatagoryUpdateRequest
+	if err := c.Bind().Body(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	if err := val.Struct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: "Invalid Body Format"})
+	}
+	rowsAffected, err := h.service.UpdateCatagoryById(c.Context(), id, req)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	if rowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(dto.ResponseError{Message: "Catagory not found"})
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.ResponseRows{Message: "Update Success", RowsAffect: rowsAffected})
+}
+
+func (h *handler) DeleteCatagoryById(c fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	rowsAffected, err := h.service.DeleteCatagoryById(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	if rowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(dto.ResponseError{Message: "Catagory not found"})
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.ResponseRows{Message: "Delete Success", RowsAffect: rowsAffected})
 }

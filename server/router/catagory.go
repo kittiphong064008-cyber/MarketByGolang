@@ -16,5 +16,8 @@ func Catagory(router fiber.Router, db *sql.DB) {
 
 	group := router.Group("/catagory")
 	group.Post("/", catagoryHandler.CreateCatagory)
+	group.Get("/", catagoryHandler.GetAllCatagory)
 	group.Get("/:id", catagoryHandler.GetCatagoryById)
+	group.Patch("/:id", catagoryHandler.UpdateCatagoryById)
+	group.Delete("/:id", catagoryHandler.DeleteCatagoryById)
 }

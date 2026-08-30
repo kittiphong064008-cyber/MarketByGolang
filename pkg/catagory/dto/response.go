@@ -7,12 +7,12 @@ type CatagoryResponse struct {
 
 type ResponseOne struct {
 	Message string           `json:"message"`
-	Value   CatagoryResponse `json:"products"`
+	Value   CatagoryResponse `json:"catagory"`
 }
 
 type ResponseAll struct {
 	Message string             `json:"message"`
-	Value   []CatagoryResponse `json:"products"`
+	Value   []CatagoryResponse `json:"catagory"`
 }
 
 type ResponseRows struct {

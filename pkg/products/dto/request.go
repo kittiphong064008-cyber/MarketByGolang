@@ -11,3 +11,8 @@ type ProductsUpdateRequest struct {
 	Price    *int    `json:"price"`
 	Descript *string `json:"descript"`
 }
+
+type ProductsPaginationRequest struct {
+	Page  int `query:"page" validate:"required,min=1"`
+	Limit int `query:"limit" validate:"required,min=1,max=10"`
+}

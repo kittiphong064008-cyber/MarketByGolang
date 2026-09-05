@@ -57,15 +57,14 @@ func (h *handler) GetAllProducts(c fiber.Ctx) error {
 }
 
 func (h *handler) GetAllProductsPaginated(c fiber.Ctx) error {
-	page, err := strconv.Atoi(c.Query("page"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	var req dto.ProductsPaginationRequest
+	if err := c.Bind().Query(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: "Invalid query format"})
 	}
-	limit, err := strconv.Atoi(c.Query("limit"))
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	if err := val.Struct(req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: "page and limit must be greater than 0"})
 	}
-	res, pagination, err := h.service.GetAllProductsPaginated(c.Context(), page, limit)
+	res, pagination, err := h.service.GetAllProductsPaginated(c.Context(), req.Page, req.Limit)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
 	}

@@ -16,8 +16,9 @@ func Product(router fiber.Router, db *sql.DB) {
 
 	group := router.Group("/product")
 	group.Post("/", productsHandler.CreateProducts)
-	group.Get("/:id", productsHandler.GetProductByid)
 	group.Get("/", productsHandler.GetAllProducts)
+	group.Get("/paginated", productsHandler.GetAllProductsPaginated)
+	group.Get("/:id", productsHandler.GetProductByid)
 	group.Patch("/:id", productsHandler.UpdateProductsById)
 	group.Delete("/:id", productsHandler.DeleteProductsById)
 	group.Get("/list", productsHandler.GetProductsItems)

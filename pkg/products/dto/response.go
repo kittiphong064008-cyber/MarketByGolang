@@ -32,6 +32,11 @@ type ResponseOne struct {
 }
 
 type ResponseAll struct {
+	Message string     `json:"message"`
+	Value   []Products `json:"products"`
+}
+
+type ResponsePaginated struct {
 	Message    string     `json:"message"`
 	Value      []Products `json:"products"`
 	Pagination Pagination `json:"pagination"`

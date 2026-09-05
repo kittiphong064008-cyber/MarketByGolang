@@ -49,20 +49,27 @@ func (h *handler) GetProductByid(c fiber.Ctx) error {
 }
 
 func (h *handler) GetAllProducts(c fiber.Ctx) error {
-	page, err := strconv.Atoi(c.Query("page", "1"))
-	if err != nil || page <= 0 {
-		page = 1
-	}
-	limit, err := strconv.Atoi(c.Query("limit", "10"))
-	if err != nil || limit <= 0 {
-		limit = 10
-	}
-
-	res, pagination, err := h.service.GetAllProducts(c.Context(), page, limit)
+	res, err := h.service.GetAllProducts(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
 	}
-	return c.Status(fiber.StatusOK).JSON(dto.ResponseAll{Message: "GET Success", Value: *res, Pagination: *pagination})
+	return c.Status(fiber.StatusOK).JSON(dto.ResponseAll{Message: "GET Success", Value: *res})
+}
+
+func (h *handler) GetAllProductsPaginated(c fiber.Ctx) error {
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	res, pagination, err := h.service.GetAllProductsPaginated(c.Context(), page, limit)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(dto.ResponseError{Message: err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.ResponsePaginated{Message: "GET Success", Value: *res, Pagination: *pagination})
 }
 
 func (h *handler) UpdateProductsById(c fiber.Ctx) error {
